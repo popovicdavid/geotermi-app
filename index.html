@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Varme fra dypet</title>
+<!-- Mal for nettversjonen. Fylles av eksempler/lag_nettbilder.jl ({{...}} byttes ut). Ikke rediger index.html direkte. -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<style>
+  :root { --tekst: #1f2328; --svak: #59636e; --kant: #d1d9e0; --bakgrunn: #ffffff; --boks: #f6f8fa; --aksent: #1f6feb; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bakgrunn); color: var(--tekst);
+         font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 900px; padding: 24px 16px 120px; margin: 0 auto; }
+  h1 { font-size: 2rem; line-height: 1.25; margin: 0.5em 0; }
+  h2 { font-size: 1.5rem; margin-top: 2em; border-bottom: 1px solid var(--kant); padding-bottom: 0.2em; }
+  h3 { font-size: 1.2rem; margin-top: 1.5em; }
+  img { max-width: 100%; height: auto; display: block; margin: 12px 0; }
+  table { border-collapse: collapse; margin: 12px 0; font-size: 0.95rem; display: block; overflow-x: auto; }
+  th, td { border: 1px solid var(--kant); padding: 4px 10px; text-align: left !important; }
+  th { background: var(--boks); }
+  code { background: var(--boks); padding: 1px 5px; border-radius: 4px; font-size: 0.9em; }
+  blockquote { margin: 1em 0; padding: 0.2em 1em; border-left: 4px solid var(--kant); color: var(--svak); }
+  .admonition { background: #ddf4ff; border-left: 4px solid var(--aksent); padding: 8px 14px; border-radius: 6px; margin: 1em 0; }
+  .admonition-title { font-weight: 600; margin: 0 0 4px; }
+  details { border: 1px solid var(--kant); border-radius: 8px; padding: 8px 14px; margin: 10px 0; background: var(--boks); }
+  details[open] { background: var(--bakgrunn); }
+  summary { cursor: pointer; font-weight: 600; }
+  a { color: var(--aksent); }
+
+  /* Glidebryterne: fast til høyre på brede skjermer, nederst på smale */
+  #panel { position: fixed; z-index: 10; background: var(--bakgrunn); border: 1px solid var(--kant);
+           border-radius: 10px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15); padding: 10px 14px; font-size: 0.9rem; }
+  #panel p { margin: 0 0 8px; }
+  #panel .forklaring { font-style: italic; color: var(--svak); }
+  #panel label { display: block; font-weight: 600; margin-top: 8px; }
+  #panel input[type=range] { width: 100%; }
+  #panel .verdi { font-weight: 400; color: var(--aksent); }
+  #panel hr { border: 0; border-top: 1px solid var(--kant); margin: 12px 0 8px; }
+  @media (min-width: 1250px) {
+    #panel { top: 24px; right: 16px; width: 290px; }
+    body { padding-right: 320px; }
+  }
+  @media (max-width: 1249px) {
+    #panel { left: 0; right: 0; bottom: 0; border-radius: 10px 10px 0 0; display: grid;
+             grid-template-columns: 1fr 1fr 1fr; gap: 0 14px; padding: 6px 12px 8px; }
+    #panel .forklaring, #panel hr { display: none; }
+    #panel label { margin-top: 2px; }
+    main { padding-bottom: 140px; }
+  }
+  @media (max-width: 600px) {
+    #panel { grid-template-columns: 1fr; }
+    main { padding-bottom: 210px; }
+  }
+</style>
+</head>
+<body>
+<aside id="panel">
+  <p class="forklaring">Glidebryterne endrer alle figurene som avhenger av det du endrer. Bruk dem til å utforske hvordan ulike geotermiske anlegg oppfører seg.</p>
+  <div><label>Avstand (m): <span class="verdi" id="v-avstand"></span></label><input type="range" id="s-avstand"></div>
+  <div><label>Vannmengde (m³ i timen): <span class="verdi" id="v-rate"></span></label><input type="range" id="s-rate"></div>
+  <hr>
+  <p class="forklaring">Beveg glidebryteren for å se hvordan systemene utvikler seg over tid, fra 1 til 100 år etter at de settes i gang.</p>
+  <div><label>År: <span class="verdi" id="v-år"></span></label><input type="range" id="s-år"></div>
+</aside>
+<main>
+<div class="celle"><h1>Varme fra dypet: hvor langt fra hverandre skal brønnene stå?</h1>
+<p>Et geotermisk anlegg med <strong>to brønner</strong> &#40;en <em>dublett</em>&#41; henter varmt vann fra en sandsteinsone 2400–2500 m under bakken. Der nede er det ca. 85 °C.</p>
+<ul>
+<li><p><strong>Produsenten</strong> henter opp varmt vann. På overflaten gir vannet fra seg varmen til fjernvarmenettet.</p>
+</li>
+<li><p><strong>Injektoren</strong> sender det avkjølte vannet ned igjen. Det kommer tilbake fra byggene med <strong>25 °C</strong>.</p>
+</li>
+</ul>
+<p>Det kalde vannet brer seg sakte gjennom steinen mot produsenten. Når det kommer fram, blir vannet som hentes opp kaldere. Det kalles <strong>termisk gjennombrudd</strong>.</p>
+<p><strong>Spørsmålet:</strong> hvor langt fra hverandre skal brønnene stå nede i bakken?</p>
+<p>Ved siden av dubletten ser du en <strong>lukket sløyfe</strong>: et lukket rør der vannet aldri kommer ut i steinen. Den er med som sammenligning.</p>
+<p>Alle tallene kommer fra simulatoren <a href="https://github.com/sintefmath/Fimbul.jl">Fimbul.jl</a> &#40;100 år&#41;. Kjøringene er regnet ut på forhånd, så figurene svarer med en gang.</p>
+</div>
+<div class="celle"><h2>1. Velg brønnavstand og vannmengde</h2>
+<p>Glidebryterne står i boksen til høyre og følger med når du blar.</p>
+<ul>
+<li><p><strong>Avstand:</strong> hvor langt fra hverandre brønnene står nede i sandsteinen &#40;oppe på bakken står de bare 100 m fra hverandre&#41;. For den lukkede sløyfen er det hvor lange de vannrette rørene er.</p>
+</li>
+<li><p><strong>Vannmengde:</strong> hvor mye vann dubletten pumper opp og sender ned igjen hver time. Den lukkede sløyfen pumper alltid 25 m³ i timen. 300 m³ er 300 000 liter, omtrent 2 000 fulle badekar hver time. Mer vann gir mer varme, men kulden sprer seg også raskere.</p>
+</li>
+</ul>
+</div>
+<div id="tabell"></div>
+<div class="celle"><h2>2. Temperatur og effekt over tid</h2>
+<p>Den tykke linjen er avstanden du valgte. De tynne grå linjene er de andre avstandene med samme vannmengde. Den stiplede linjen er gjennombruddet &#40;året står over figuren&#41;. Den grå loddrette linjen er året du har valgt med glidebryteren for år.</p>
+<p><strong>Effekt</strong> er hvor mye varme anlegget leverer per sekund &#40;1 MW &#61; 1 million joule per sekund&#41;. Den er størst når vannet som kommer opp, er mye varmere enn vannet som sendes ned.</p>
+<p><strong>Til høyre: lukket sløyfe.</strong> Her pumpes vannet gjennom et lukket rør: ned til 2400 m, gjennom to vannrette rør i steinen og opp igjen. Vannet kommer aldri ut i steinen, og varmen må ledes inn gjennom rørveggen. Avstanden er nå hvor lange de vannrette rørene er. Sløyfen pumper 25 m³ i timen &#40;ca. 7 kg/s, Fimbuls standard&#41;. Det er vanlig for slike anlegg: NREL regner med ca. 6 kg/s for Eavor-Loop 2.0 &#40;Beckers m.fl. 2022&#41;, og studier bruker 2–20 kg/s &#40;fra søkesammendrag&#41;. Den har ingen kald front og ikke noe gjennombrudd. Lengre rør gir mer varme.</p>
+</div>
+<div class="celle"><h3>Er anlegget ferdig etter gjennombruddet?</h3>
+<p>Nei. <strong>Gjennombrudd</strong> betyr at vannet <em>begynner</em> å bli kaldere. Varmen er ikke borte: se hvor varmt vannet fortsatt er etter 100 år. Hvor kaldt vannet kan bli før anlegget ikke lenger er nyttig, kommer an på hva varmen skal brukes til. Det ser du på i oppgave 4B.</p>
+</div>
+<img class="dyn" data-fig="tid" alt="figur">
+<div class="celle"><h2>3. Se kulden spre seg år for år</h2>
+<p>Dra i glidebryteren for år. Kartene og 3D-figurene under viser <strong>hvor mye kaldere</strong> steinen og vannet i sandsteinen er blitt siden starten &#40;ΔT&#41;. Sandfarge betyr ingen endring, mørkeblått betyr mye kaldere &#40;opptil ca. 60 °C&#41;.</p>
+<p><strong>Kartet ovenfra</strong> viser et snitt over hele tykkelsen av sandsteinen &#40;100 m&#41;. Til høyre ser du den lukkede sløyfen på samme kart, i laget der rørene ligger &#40;2390–2400 m&#41;. Brønnene står på samme sted i begge kartene, så du kan sammenligne direkte. De stiplede linjene er rørene.</p>
+</div>
+<img class="dyn" data-fig="kart" alt="figur">
+<img class="dyn" data-fig="utsnitt" alt="figur">
+<div class="celle"><p><strong>I 3D</strong> ser du sandsteinen på skrå ovenfra. Halvparten er skåret bort langs linjen mellom brønnene, så du ser inn i laget. Høyden er forstørret ca. 1.6 ganger, så laget &#40;100 m tykt&#41; ikke blir en helt tynn skive. Blå strek &#61; injektor, rød strek &#61; produsent.</p>
+<p><strong>Lukket sløyfe i 3D</strong> &#40;figuren under&#41;: bare steinen innenfor 150 m fra rørene i 2300–2500 m er tatt med, resten er nesten uendret. Foran er steinen over rørene fjernet, så du ser ned på laget rørene ligger i &#40;2390–2400 m&#41;. Bak står steinen helt opp, fra like bak det bakerste røret.</p>
+</div>
+<img class="dyn" data-fig="dub3d" alt="figur">
+<img class="dyn" data-fig="ags3d" alt="figur">
+<div class="celle"><h2>4. Oppgaver</h2>
+<h3>A. Et større anlegg</h3>
+<p>Byen vokser og trenger mer varme. Anlegget skal pumpe <strong>450 m³</strong> vann i timen i stedet for <strong>200 m³</strong>.</p>
+<ol>
+<li><p>Sett vannmengden til <strong>200</strong> og avstanden til <strong>1000 m</strong>. Når kommer gjennombruddet? Hvor mange MW gir anlegget?</p>
+</li>
+<li><p>Sett vannmengden til <strong>450</strong>. Hva skjer med gjennombruddet hvis brønnene står like langt fra hverandre?</p>
+</li>
+<li><p>Hvor langt fra hverandre må brønnene stå for at gjennombruddet skal komme omtrent like sent som i oppgave 1?</p>
+</li>
+<li><p>Prøv det samme med 500 m og 200 m³ i timen. Passer svaret ditt fortsatt?</p>
+</li>
+</ol>
+<div class="admonition tip"><p class="admonition-title">Tips</p><p>Tiden før gjennombruddet avhenger av <strong>avstanden ganget med seg selv</strong> delt på vannmengden. 450 er 2.25 ganger så mye som 200. Hvilket tall ganget med seg selv blir 2.25?</p>
+</div>
+<h3>B. Hvor langt fra hverandre skal brønnene stå?</h3>
+<p>Etter gjennombruddet blir vannet sakte kaldere. Hvor kaldt det kan bli, kommer an på hva varmen skal brukes til. Brønnene varer heller ikke evig: rørene ruster og det dannes avleiringer, så de fleste brønner må repareres eller bores på nytt innen 30–50 år. Derfor ser vi bare på de <strong>første 50 årene</strong>, selv om simuleringen går i 100 år.</p>
+<p>Lengre avstand betyr lengre brønner, og det koster mer å bore.</p>
+<ol>
+<li><p>Byen trenger mye varme, så anlegget må pumpe <strong>450 m³</strong> i timen. Vannet skal holde seg <strong>over 70 °C i minst 50 år</strong>. Hvilken avstand bør vi velge for å spare mest penger?</p>
+</li>
+<li><p>Hva blir svaret hvis det holder med <strong>300 m³</strong> i timen?</p>
+</li>
+<li><p>Hvor mange MW gir anlegget i oppgave 1 etter 50 år? Og det i oppgave 2?</p>
+</li>
+<li><p>Eldre bygg med radiatorer kan trenge opptil <strong>80 °C</strong> på de kaldeste dagene. Kan dette anlegget varme dem uten hjelp, for eksempel fra en varmepumpe? Se på hvor varmt vannet er på det varmeste.</p>
+</li>
+</ol>
+</div>
+<div class="celle"><h2>5. Hva lærte du?</h2>
+<ol>
+<li><p>Hva skjer med gjennombruddet når brønnene står nærmere hverandre? Hvorfor?</p>
+</li>
+<li><p>Mer vann gir mer varme nå. Hva er ulempen?</p>
+</li>
+<li><p>Er varmen borte etter gjennombruddet? Se på temperaturen etter 100 år.</p>
+</li>
+<li><p>Lengre avstand gir senere gjennombrudd. Hvorfor setter man ikke bare brønnene veldig langt fra hverandre? &#40;Tips: boring, kostnad og trykk.&#41;</p>
+</li>
+</ol>
+<blockquote>
+<p><strong>Forenklinger i modellen:</strong> sandsteinen er like gjennomtrengelig overalt, det er ingen sprekker, og alt vannet sendes ned igjen. I virkeligheten vet vi lite om steinen mellom brønnene.</p>
+</blockquote>
+</div>
+<div class="celle"><h2>6. Kan vi stole på dette?</h2>
+<p><em>For lærere og nysgjerrige.</em> En simulering er bare så god som valgene bak den. Mange av valgene er <strong>stille standardvalg</strong> i eksempelet vi bygget på: de står ikke i teksten, men endrer svaret. Her er kontrollene vi har gjort. Klikk på en kontroll for å åpne den. Hver kontroll sier hva som er <strong>sjekket</strong> og hva som er <strong>antatt</strong>.</p>
+</div>
+<div class="celle"><details><summary>K1. Stemmer gjennombruddet med en enkel formel?</summary><div class="innhold"><p>Wallmeier m.fl. &#40;2025, likning 9&#41; gir tiden før gjennombruddet med en formel: &#36;t &#61; &#40;φ/λ&#41;\,π h L^2 / &#40;3q&#41;&#36;. Her er &#36;L&#36; avstanden, &#36;q&#36; vannmengden, &#36;h&#36; tykkelsen på sandsteinen &#40;100 m&#41; og &#36;φ/λ&#36; hvor mye varme steinen og vannet holder sammen &#40;ca. 0.71 med Fimbuls verdier&#41;. Tiden vokser med <strong>avstanden i andre</strong> og synker med vannmengden.</p>
+<img src="bilder/fast_1.png" alt="figur"><table><tr><th align="right">m³/t</th><th align="right">Avstand</th><th align="right">Formel</th><th align="right">Simulering</th></tr><tr><td align="right">200</td><td align="right">500 m</td><td align="right">11 år</td><td align="right">7 år</td></tr><tr><td align="right">200</td><td align="right">750 m</td><td align="right">24 år</td><td align="right">18 år</td></tr><tr><td align="right">200</td><td align="right">1000 m</td><td align="right">42 år</td><td align="right">37 år</td></tr><tr><td align="right">200</td><td align="right">1250 m</td><td align="right">66 år</td><td align="right">63 år</td></tr><tr><td align="right">200</td><td align="right">1500 m</td><td align="right">95 år</td><td align="right">over 100 år</td></tr><tr><td align="right">300</td><td align="right">500 m</td><td align="right">7 år</td><td align="right">4 år</td></tr><tr><td align="right">300</td><td align="right">750 m</td><td align="right">16 år</td><td align="right">11 år</td></tr><tr><td align="right">300</td><td align="right">1000 m</td><td align="right">28 år</td><td align="right">23 år</td></tr><tr><td align="right">300</td><td align="right">1250 m</td><td align="right">44 år</td><td align="right">39 år</td></tr><tr><td align="right">300</td><td align="right">1500 m</td><td align="right">63 år</td><td align="right">65 år</td></tr><tr><td align="right">450</td><td align="right">500 m</td><td align="right">5 år</td><td align="right">3 år</td></tr><tr><td align="right">450</td><td align="right">750 m</td><td align="right">11 år</td><td align="right">7 år</td></tr><tr><td align="right">450</td><td align="right">1000 m</td><td align="right">19 år</td><td align="right">15 år</td></tr><tr><td align="right">450</td><td align="right">1250 m</td><td align="right">29 år</td><td align="right">25 år</td></tr><tr><td align="right">450</td><td align="right">1500 m</td><td align="right">42 år</td><td align="right">41 år</td></tr></table>
+<p><strong>Sjekket:</strong> formelen og simuleringen gir samme størrelsesorden og samme vekst for alle tre vannmengder. <strong>Antatt:</strong> at simuleringen er litt tidligere ved korte avstander fordi fronten ikke er skarp. Varmeledning smører den ut, så de første gradene kommer før midten av fronten, som formelen regner på.</p>
+</div></details></div>
+<div class="celle"><details><summary>K2. Holder regelen med avstanden i andre i simuleringen?</summary><div class="innhold"><p>Formelen sier at 2.25 ganger mer vann &#40;450 mot 200 m³/t&#41; krever 1.5 ganger avstanden &#40;1.5² &#61; 2.25&#41; for samme gjennombrudd. Vannmengdene i appen er valgt slik at parene finnes på glidebryteren.</p>
+<table><tr><th align="right">Anlegg 1</th><th align="right">Anlegg 2</th><th align="right">Gjennombrudd</th><th align="right">Etter 30 år</th><th align="right">Største forskjell</th></tr><tr><td align="right">200 m³/t, 500 m</td><td align="right">450 m³/t, 750 m</td><td align="right">7 / 7 år</td><td align="right">65.9 / 66.4 °C</td><td align="right">2.9 °C</td></tr><tr><td align="right">200 m³/t, 1000 m</td><td align="right">450 m³/t, 1500 m</td><td align="right">37 / 41 år</td><td align="right">80.9 / 81.8 °C</td><td align="right">1.8 °C</td></tr></table>
+<p><strong>Sjekket:</strong> regelen holder godt for gjennombruddet og omtrent for resten av kurven &#40;høyst ca. 3 °C forskjell over 100 år&#41;. <strong>Antatt:</strong> at forskjellen kommer av at mer vann også henter mer varme fra steinlagene over og under, som formelen ikke tar med.</p>
+</div></details></div>
+<div class="celle"><details><summary>K3. Er gridet fint nok for dubletten?</summary><div class="innhold"><p>Simulatoren deler steinen i små celler &#40;et <em>grid</em>&#41;. For å få appen rask nok bruker dubletten et grovere grid enn Fimbuls eksempel. &#40;Den lukkede sløyfen bruker Fimbuls standardgrid, se K3b.&#41; Her er de samme kjøringene med flere celler &#40;300 m³/t, 25 °C&#41;.</p>
+<img src="bilder/fast_2.png" alt="figur"><table><tr><th align="right">Avstand</th><th align="right">Grid</th><th align="right">Celler</th><th align="right">Etter 30 år</th><th align="right">Etter 50 år</th><th align="right">Etter 100 år</th></tr><tr><td align="right">500 m</td><td align="right">grovt &#40;appen før&#41;</td><td align="right">1540</td><td align="right">63.0 °C</td><td align="right">56.9 °C</td><td align="right">49.6 °C</td></tr><tr><td align="right">500 m</td><td align="right">appen nå</td><td align="right">11928</td><td align="right">60.6 °C</td><td align="right">54.9 °C</td><td align="right">48.0 °C</td></tr><tr><td align="right">500 m</td><td align="right">Fimbuls standard</td><td align="right">3024</td><td align="right">72.2 °C</td><td align="right">64.4 °C</td><td align="right">53.9 °C</td></tr><tr><td align="right">500 m</td><td align="right">ekstra fint</td><td align="right">183456</td><td align="right">60.3 °C</td><td align="right">54.8 °C</td><td align="right">48.2 °C</td></tr><tr><td align="right">750 m</td><td align="right">grovt &#40;appen&#41;</td><td align="right">11256</td><td align="right">71.4 °C</td><td align="right">65.4 °C</td><td align="right">59.1 °C</td></tr><tr><td align="right">750 m</td><td align="right">Fimbuls standard</td><td align="right">43512</td><td align="right">71.4 °C</td><td align="right">65.2 °C</td><td align="right">58.5 °C</td></tr><tr><td align="right">1000 m</td><td align="right">grovt &#40;appen&#41;</td><td align="right">14560</td><td align="right">79.3 °C</td><td align="right">74.4 °C</td><td align="right">67.0 °C</td></tr><tr><td align="right">1000 m</td><td align="right">Fimbuls standard</td><td align="right">67144</td><td align="right">79.3 °C</td><td align="right">73.8 °C</td><td align="right">66.4 °C</td></tr></table>
+<p><em>Avvik</em> betyr her forskjellen fra kjøringen med flest celler, som er vårt beste estimat av hva modellen egentlig sier. Det sier ingenting om hvor godt modellen stemmer med virkeligheten.</p>
+<p><strong>Sjekket:</strong> ved 750 og 1000 m gir det grove gridet nesten samme svar som Fimbuls standard &#40;under 1 °C forskjell&#41;. Ved <strong>500 m</strong> ga det grove gridet bare 1 540 celler og opptil ca. 3 °C feil, og Fimbuls standardgrid bare ca. 3 000 celler og opptil ca. 12 °C feil, sammenlignet med et ekstra fint grid &#40;ca. 180 000 celler&#41;. Appen bruker derfor et finere grid ved 500 m &#40;ca. 12 000 celler, samme nivå som 750 og 1000 m&#41;. Det ligger under 0.5 °C fra det ekstra fine.</p>
+<p><strong>Antatt:</strong> at gridene blir dårlige ved 500 m fordi de bygges ut fra brønnavstanden &#40;se K6&#41;. Vi har bare ett finere nivå å sammenligne med, så vi vet ikke sikkert at det ekstra fine gridet er godt nok.</p>
+</div></details></div>
+<div class="celle"><details><summary>K3b. Er gridet fint nok for den lukkede sløyfen?</summary><div class="innhold"><p>Den lukkede sløyfen bruker Fimbuls standardgrid &#40;celler fra 25 m nær rørene til 250 m lenger ut&#41;. Her er samme kjøring ved 1000 m med celler som er halvparten så store &#40;12.5–125 m&#41;.</p>
+<img src="bilder/fast_3.png" alt="figur"><table><tr><th align="right">Grid</th><th align="right">Celler</th><th align="right">År 1</th><th align="right">30 år</th><th align="right">50 år</th><th align="right">100 år</th><th align="right">Effekt 30 år</th></tr><tr><td align="right">Fimbuls standard &#40;appen&#41;</td><td align="right">65052</td><td align="right">41.0 °C</td><td align="right">36.8 °C</td><td align="right">36.3 °C</td><td align="right">35.8 °C</td><td align="right">0.35 MW</td></tr><tr><td align="right">halvparten så store celler</td><td align="right">271548</td><td align="right">40.1 °C</td><td align="right">36.5 °C</td><td align="right">36.1 °C</td><td align="right">35.5 °C</td><td align="right">0.342 MW</td></tr></table>
+<p><strong>Sjekket:</strong> største forskjell i temperatur opp er 0.9 °C &#40;det første året&#41;, og 0.3 °C eller mindre etter 30 år. Effekten blir ca. 2.5 &#37; lavere med finere grid. Det er lite mot forskjellen fra dubletten &#40;ca. 55 ganger mer effekt&#41;, så konklusjonen holder.</p>
+<p><strong>Antatt:</strong> at det samme gjelder de andre avstandene &#40;bare 1000 m er sjekket&#41;. Vi har bare ett finere nivå å sammenligne med.</p>
+</div></details></div>
+<div class="celle"><details><summary>K4. Stille valg 1: vannet ble varmere på vei opp</summary><div class="innhold"><p>I Fimbuls eksempel blir vannet <strong>varmere</strong> på vei opp i produsenten &#40;ca. 85 °C nede, 87.2 °C på toppen&#41;. Det ga ikke mening: vannet stiger gjennom kaldere stein. Årsaken er at simulatoren som standard &#40;<code>energy_formulation &#61; :thermal</code>&#41; ikke tar med arbeidet vannet gjør mot tyngdekraften. Med <code>:total</code> blir vannet kaldere oppover, som det skal.</p>
+<table><tr><th align="right"></th><th align="right"><code>:thermal</code> &#40;standard&#41;</th><th align="right"><code>:total</code> &#40;appen&#41;</th></tr><tr><td align="right">Toppen, år 1</td><td align="right">87.2 °C</td><td align="right">81.7 °C</td></tr><tr><td align="right">Toppen, år 30</td><td align="right">84.7 °C</td><td align="right">79.2 °C</td></tr><tr><td align="right">Fall år 1 → 30</td><td align="right">2.5 °C</td><td align="right">2.5 °C</td></tr></table>
+<img src="bilder/fast_thermal-mot-total.png" alt="figur"><p><em>Figuren er fra Fimbuls eksempel &#40;injeksjon 20 °C, fint grid&#41;.</em> <strong>Sjekket:</strong> standardvalget gjør vannet ca. 5.5 °C for varmt, men endringen over tid er den samme. Gjennombruddet holder, men energien blir overvurdert. Den lukkede sløyfen bruker også <code>:total</code>.</p>
+</div></details></div>
+<div class="celle"><details><summary>K5. Stille valg 2: vannet ble sendt ned med 20 °C</summary><div class="innhold"><p>Fimbuls eksempel sender vannet ned igjen med 20 °C. Så kaldt blir vannet bare med en <strong>varmepumpe</strong> &#40;Thisted 12 °C, Sønderborg 15 °C&#41;. Uten varmepumpe kommer vannet tilbake fra et lavtemperaturnett med ca. 25–30 °C &#40;IEA, Statkraft 25 °C&#41;. Appen bruker derfor <strong>25 °C</strong>.</p>
+<table><tr><th align="right"></th><th align="right">20 °C &#40;eksempelet&#41;</th><th align="right">25 °C &#40;appen&#41;</th></tr><tr><td align="right">Gjennombrudd &#40;300 m³/t&#41;</td><td align="right">5 / 11 / 23 / 39 / 65 år</td><td align="right">5 / 11 / 23 / 39 / 65 år</td></tr><tr><td align="right">Effekt år 1</td><td align="right">22.0 MW</td><td align="right">20.2 MW</td></tr></table>
+<p><strong>Sjekket:</strong> gjennombruddet er det samme, men effekten var ca. 8 &#37; for høy med 20 °C.</p>
+</div></details></div>
+<div class="celle"><details><summary>K6. Begrensninger: dette vet modellen ikke</summary><div class="innhold"><ul>
+<li><p><strong>Modellen blir større med avstanden.</strong> Det gjelder begge anleggene. Gridet bygges rundt brønnene, så 500 m-modellen er bare ca. 1.4 × 1 km. &#40;Cellene er gjort mindre ved 500 m, se K3, men området er like lite.&#41; Prøv selv: sett avstanden til 500 m og året til 100. Da når kulden i dubletten kanten av modellen. Sammenligner du avstander, endres altså også hvor mye stein det er rundt brønnene. &#40;Sjekket: størrelse og celletall. Antatt: at det bare påvirker 500 m noe særlig.&#41;</p>
+</li>
+<li><p><strong>Steinen er lik overalt</strong>, uten sprekker og forkastninger. I virkeligheten kan sprekker gi gjennombrudd etter få år &#40;Bauer m.fl. 2019&#41;, og lag som ikke henger sammen kan gi flere grader forskjell &#40;Mouche m.fl. 2025&#41;. Modellen er derfor trolig <strong>for optimistisk</strong>.</p>
+</li>
+<li><p><strong>Brønnene varer ikke i 100 år.</strong> I Paris måtte brønnene repareres eller bores på nytt etter ca. 30 år, på grunn av rust og avleiringer, ikke fordi vannet ble for kaldt. Simuleringen går 100 år for å vise at varmen ikke er brukt opp.</p>
+</li>
+<li><p><strong>Tekst mot kode i eksempelet:</strong> dokumentasjonen til Fimbuls eksempel sier 200 år, men koden kjører 100 år &#40;<code>num_years &#61; 100</code>&#41;. Vi har fulgt koden.</p>
+</li>
+</ul>
+</div></details></div>
+</main>
+<script>
+  const AVSTANDER = [500, 750, 1000, 1250, 1500], RATER = [200, 300, 450], ÅR = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100];
+  const TABELLER = {"1000_200": "<div class=\"markdown\"><p>Med <strong>1000 m<\/strong> mellom brønnene og <strong>200 m³<\/strong> vann i timen kommer vannet opp med <strong>81.4 °C<\/strong> på det varmeste. Gjennombruddet kommer etter ca. <strong>37 år<\/strong>.<\/p>\n<table><tr><th align=\"right\"><\/th><th align=\"right\">Start<\/th><th align=\"right\">Etter 30 år<\/th><th align=\"right\">Etter 50 år<\/th><th align=\"right\">Etter 100 år<\/th><\/tr><tr><td align=\"right\">Temperatur opp<\/td><td align=\"right\">81.4 °C<\/td><td align=\"right\">80.9 °C<\/td><td align=\"right\">78.5 °C<\/td><td align=\"right\">71.6 °C<\/td><\/tr><tr><td align=\"right\">Effekt<\/td><td align=\"right\">13.4 MW<\/td><td align=\"right\">13.3 MW<\/td><td align=\"right\">12.7 MW<\/td><td align=\"right\">11.1 MW<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, temperatur opp<\/em><\/td><td align=\"right\">41.0 °C<\/td><td align=\"right\">36.8 °C<\/td><td align=\"right\">36.3 °C<\/td><td align=\"right\">35.7 °C<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, effekt<\/em><\/td><td align=\"right\">0.47 MW<\/td><td align=\"right\">0.35 MW<\/td><td align=\"right\">0.34 MW<\/td><td align=\"right\">0.32 MW<\/td><\/tr><\/table>\n<\/div>",
+"1000_300": "<div class=\"markdown\"><p>Med <strong>1000 m<\/strong> mellom brønnene og <strong>300 m³<\/strong> vann i timen kommer vannet opp med <strong>81.8 °C<\/strong> på det varmeste. Gjennombruddet kommer etter ca. <strong>23 år<\/strong>.<\/p>\n<table><tr><th align=\"right\"><\/th><th align=\"right\">Start<\/th><th align=\"right\">Etter 30 år<\/th><th align=\"right\">Etter 50 år<\/th><th align=\"right\">Etter 100 år<\/th><\/tr><tr><td align=\"right\">Temperatur opp<\/td><td align=\"right\">81.8 °C<\/td><td align=\"right\">79.3 °C<\/td><td align=\"right\">74.4 °C<\/td><td align=\"right\">67.0 °C<\/td><\/tr><tr><td align=\"right\">Effekt<\/td><td align=\"right\">20.2 MW<\/td><td align=\"right\">19.3 MW<\/td><td align=\"right\">17.6 MW<\/td><td align=\"right\">14.9 MW<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, temperatur opp<\/em><\/td><td align=\"right\">41.0 °C<\/td><td align=\"right\">36.8 °C<\/td><td align=\"right\">36.3 °C<\/td><td align=\"right\">35.7 °C<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, effekt<\/em><\/td><td align=\"right\">0.47 MW<\/td><td align=\"right\">0.35 MW<\/td><td align=\"right\">0.34 MW<\/td><td align=\"right\">0.32 MW<\/td><\/tr><\/table>\n<\/div>",
+"1000_450": "<div class=\"markdown\"><p>Med <strong>1000 m<\/strong> mellom brønnene og <strong>450 m³<\/strong> vann i timen kommer vannet opp med <strong>82.1 °C<\/strong> på det varmeste. Gjennombruddet kommer etter ca. <strong>15 år<\/strong>.<\/p>\n<table><tr><th align=\"right\"><\/th><th align=\"right\">Start<\/th><th align=\"right\">Etter 30 år<\/th><th align=\"right\">Etter 50 år<\/th><th align=\"right\">Etter 100 år<\/th><\/tr><tr><td align=\"right\">Temperatur opp<\/td><td align=\"right\">82.1 °C<\/td><td align=\"right\">75.6 °C<\/td><td align=\"right\">69.5 °C<\/td><td align=\"right\">63.0 °C<\/td><\/tr><tr><td align=\"right\">Effekt<\/td><td align=\"right\">30.5 MW<\/td><td align=\"right\">27.0 MW<\/td><td align=\"right\">23.5 MW<\/td><td align=\"right\">19.2 MW<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, temperatur opp<\/em><\/td><td align=\"right\">41.0 °C<\/td><td align=\"right\">36.8 °C<\/td><td align=\"right\">36.3 °C<\/td><td align=\"right\">35.7 °C<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, effekt<\/em><\/td><td align=\"right\">0.47 MW<\/td><td align=\"right\">0.35 MW<\/td><td align=\"right\">0.34 MW<\/td><td align=\"right\">0.32 MW<\/td><\/tr><\/table>\n<\/div>",
+"1250_200": "<div class=\"markdown\"><p>Med <strong>1250 m<\/strong> mellom brønnene og <strong>200 m³<\/strong> vann i timen kommer vannet opp med <strong>81.4 °C<\/strong> på det varmeste. Gjennombruddet kommer etter ca. <strong>63 år<\/strong>.<\/p>\n<table><tr><th align=\"right\"><\/th><th align=\"right\">Start<\/th><th align=\"right\">Etter 30 år<\/th><th align=\"right\">Etter 50 år<\/th><th align=\"right\">Etter 100 år<\/th><\/tr><tr><td align=\"right\">Temperatur opp<\/td><td align=\"right\">81.4 °C<\/td><td align=\"right\">81.4 °C<\/td><td align=\"right\">81.1 °C<\/td><td align=\"right\">76.9 °C<\/td><\/tr><tr><td align=\"right\">Effekt<\/td><td align=\"right\">13.4 MW<\/td><td align=\"right\">13.4 MW<\/td><td align=\"right\">13.3 MW<\/td><td align=\"right\">12.3 MW<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, temperatur opp<\/em><\/td><td align=\"right\">42.7 °C<\/td><td align=\"right\">38.1 °C<\/td><td align=\"right\">37.6 °C<\/td><td align=\"right\">37.0 °C<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, effekt<\/em><\/td><td align=\"right\">0.53 MW<\/td><td align=\"right\">0.39 MW<\/td><td align=\"right\">0.37 MW<\/td><td align=\"right\">0.35 MW<\/td><\/tr><\/table>\n<\/div>",
+"1250_300": "<div class=\"markdown\"><p>Med <strong>1250 m<\/strong> mellom brønnene og <strong>300 m³<\/strong> vann i timen kommer vannet opp med <strong>81.7 °C<\/strong> på det varmeste. Gjennombruddet kommer etter ca. <strong>39 år<\/strong>.<\/p>\n<table><tr><th align=\"right\"><\/th><th align=\"right\">Start<\/th><th align=\"right\">Etter 30 år<\/th><th align=\"right\">Etter 50 år<\/th><th align=\"right\">Etter 100 år<\/th><\/tr><tr><td align=\"right\">Temperatur opp<\/td><td align=\"right\">81.7 °C<\/td><td align=\"right\">81.4 °C<\/td><td align=\"right\">79.3 °C<\/td><td align=\"right\">72.6 °C<\/td><\/tr><tr><td align=\"right\">Effekt<\/td><td align=\"right\">20.2 MW<\/td><td align=\"right\">20.1 MW<\/td><td align=\"right\">19.3 MW<\/td><td align=\"right\">16.9 MW<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, temperatur opp<\/em><\/td><td align=\"right\">42.7 °C<\/td><td align=\"right\">38.1 °C<\/td><td align=\"right\">37.6 °C<\/td><td align=\"right\">37.0 °C<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, effekt<\/em><\/td><td align=\"right\">0.53 MW<\/td><td align=\"right\">0.39 MW<\/td><td align=\"right\">0.37 MW<\/td><td align=\"right\">0.35 MW<\/td><\/tr><\/table>\n<\/div>",
+"1250_450": "<div class=\"markdown\"><p>Med <strong>1250 m<\/strong> mellom brønnene og <strong>450 m³<\/strong> vann i timen kommer vannet opp med <strong>82.1 °C<\/strong> på det varmeste. Gjennombruddet kommer etter ca. <strong>25 år<\/strong>.<\/p>\n<table><tr><th align=\"right\"><\/th><th align=\"right\">Start<\/th><th align=\"right\">Etter 30 år<\/th><th align=\"right\">Etter 50 år<\/th><th align=\"right\">Etter 100 år<\/th><\/tr><tr><td align=\"right\">Temperatur opp<\/td><td align=\"right\">82.1 °C<\/td><td align=\"right\">80.1 °C<\/td><td align=\"right\">75.3 °C<\/td><td align=\"right\">68.3 °C<\/td><\/tr><tr><td align=\"right\">Effekt<\/td><td align=\"right\">30.5 MW<\/td><td align=\"right\">29.4 MW<\/td><td align=\"right\">26.9 MW<\/td><td align=\"right\">22.6 MW<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, temperatur opp<\/em><\/td><td align=\"right\">42.7 °C<\/td><td align=\"right\">38.1 °C<\/td><td align=\"right\">37.6 °C<\/td><td align=\"right\">37.0 °C<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, effekt<\/em><\/td><td align=\"right\">0.53 MW<\/td><td align=\"right\">0.39 MW<\/td><td align=\"right\">0.37 MW<\/td><td align=\"right\">0.35 MW<\/td><\/tr><\/table>\n<\/div>",
+"1500_200": "<div class=\"markdown\"><p>Med <strong>1500 m<\/strong> mellom brønnene og <strong>200 m³<\/strong> vann i timen kommer vannet opp med <strong>81.4 °C<\/strong> på det varmeste. Gjennombruddet kommer ikke innen 100 år.<\/p>\n<table><tr><th align=\"right\"><\/th><th align=\"right\">Start<\/th><th align=\"right\">Etter 30 år<\/th><th align=\"right\">Etter 50 år<\/th><th align=\"right\">Etter 100 år<\/th><\/tr><tr><td align=\"right\">Temperatur opp<\/td><td align=\"right\">81.4 °C<\/td><td align=\"right\">81.4 °C<\/td><td align=\"right\">81.4 °C<\/td><td align=\"right\">80.6 °C<\/td><\/tr><tr><td align=\"right\">Effekt<\/td><td align=\"right\">13.4 MW<\/td><td align=\"right\">13.4 MW<\/td><td align=\"right\">13.4 MW<\/td><td align=\"right\">13.2 MW<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, temperatur opp<\/em><\/td><td align=\"right\">44.7 °C<\/td><td align=\"right\">39.6 °C<\/td><td align=\"right\">39.1 °C<\/td><td align=\"right\">38.3 °C<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, effekt<\/em><\/td><td align=\"right\">0.58 MW<\/td><td align=\"right\">0.43 MW<\/td><td align=\"right\">0.42 MW<\/td><td align=\"right\">0.4 MW<\/td><\/tr><\/table>\n<\/div>",
+"1500_300": "<div class=\"markdown\"><p>Med <strong>1500 m<\/strong> mellom brønnene og <strong>300 m³<\/strong> vann i timen kommer vannet opp med <strong>81.8 °C<\/strong> på det varmeste. Gjennombruddet kommer etter ca. <strong>65 år<\/strong>.<\/p>\n<table><tr><th align=\"right\"><\/th><th align=\"right\">Start<\/th><th align=\"right\">Etter 30 år<\/th><th align=\"right\">Etter 50 år<\/th><th align=\"right\">Etter 100 år<\/th><\/tr><tr><td align=\"right\">Temperatur opp<\/td><td align=\"right\">81.8 °C<\/td><td align=\"right\">81.7 °C<\/td><td align=\"right\">81.5 °C<\/td><td align=\"right\">77.7 °C<\/td><\/tr><tr><td align=\"right\">Effekt<\/td><td align=\"right\">20.2 MW<\/td><td align=\"right\">20.2 MW<\/td><td align=\"right\">20.1 MW<\/td><td align=\"right\">18.7 MW<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, temperatur opp<\/em><\/td><td align=\"right\">44.7 °C<\/td><td align=\"right\">39.6 °C<\/td><td align=\"right\">39.1 °C<\/td><td align=\"right\">38.3 °C<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, effekt<\/em><\/td><td align=\"right\">0.58 MW<\/td><td align=\"right\">0.43 MW<\/td><td align=\"right\">0.42 MW<\/td><td align=\"right\">0.4 MW<\/td><\/tr><\/table>\n<\/div>",
+"1500_450": "<div class=\"markdown\"><p>Med <strong>1500 m<\/strong> mellom brønnene og <strong>450 m³<\/strong> vann i timen kommer vannet opp med <strong>82.1 °C<\/strong> på det varmeste. Gjennombruddet kommer etter ca. <strong>41 år<\/strong>.<\/p>\n<table><tr><th align=\"right\"><\/th><th align=\"right\">Start<\/th><th align=\"right\">Etter 30 år<\/th><th align=\"right\">Etter 50 år<\/th><th align=\"right\">Etter 100 år<\/th><\/tr><tr><td align=\"right\">Temperatur opp<\/td><td align=\"right\">82.1 °C<\/td><td align=\"right\">81.8 °C<\/td><td align=\"right\">80.0 °C<\/td><td align=\"right\">73.4 °C<\/td><\/tr><tr><td align=\"right\">Effekt<\/td><td align=\"right\">30.5 MW<\/td><td align=\"right\">30.3 MW<\/td><td align=\"right\">29.3 MW<\/td><td align=\"right\">25.7 MW<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, temperatur opp<\/em><\/td><td align=\"right\">44.7 °C<\/td><td align=\"right\">39.6 °C<\/td><td align=\"right\">39.1 °C<\/td><td align=\"right\">38.3 °C<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, effekt<\/em><\/td><td align=\"right\">0.58 MW<\/td><td align=\"right\">0.43 MW<\/td><td align=\"right\">0.42 MW<\/td><td align=\"right\">0.4 MW<\/td><\/tr><\/table>\n<\/div>",
+"500_200": "<div class=\"markdown\"><p>Med <strong>500 m<\/strong> mellom brønnene og <strong>200 m³<\/strong> vann i timen kommer vannet opp med <strong>81.4 °C<\/strong> på det varmeste. Gjennombruddet kommer etter ca. <strong>7 år<\/strong>.<\/p>\n<table><tr><th align=\"right\"><\/th><th align=\"right\">Start<\/th><th align=\"right\">Etter 30 år<\/th><th align=\"right\">Etter 50 år<\/th><th align=\"right\">Etter 100 år<\/th><\/tr><tr><td align=\"right\">Temperatur opp<\/td><td align=\"right\">81.4 °C<\/td><td align=\"right\">65.9 °C<\/td><td align=\"right\">59.8 °C<\/td><td align=\"right\">52.7 °C<\/td><\/tr><tr><td align=\"right\">Effekt<\/td><td align=\"right\">13.4 MW<\/td><td align=\"right\">9.7 MW<\/td><td align=\"right\">8.3 MW<\/td><td align=\"right\">6.6 MW<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, temperatur opp<\/em><\/td><td align=\"right\">37.2 °C<\/td><td align=\"right\">34.0 °C<\/td><td align=\"right\">33.6 °C<\/td><td align=\"right\">33.2 °C<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, effekt<\/em><\/td><td align=\"right\">0.36 MW<\/td><td align=\"right\">0.27 MW<\/td><td align=\"right\">0.26 MW<\/td><td align=\"right\">0.24 MW<\/td><\/tr><\/table>\n<\/div>",
+"500_300": "<div class=\"markdown\"><p>Med <strong>500 m<\/strong> mellom brønnene og <strong>300 m³<\/strong> vann i timen kommer vannet opp med <strong>81.8 °C<\/strong> på det varmeste. Gjennombruddet kommer etter ca. <strong>4 år<\/strong>.<\/p>\n<table><tr><th align=\"right\"><\/th><th align=\"right\">Start<\/th><th align=\"right\">Etter 30 år<\/th><th align=\"right\">Etter 50 år<\/th><th align=\"right\">Etter 100 år<\/th><\/tr><tr><td align=\"right\">Temperatur opp<\/td><td align=\"right\">81.8 °C<\/td><td align=\"right\">60.6 °C<\/td><td align=\"right\">54.9 °C<\/td><td align=\"right\">48.0 °C<\/td><\/tr><tr><td align=\"right\">Effekt<\/td><td align=\"right\">20.2 MW<\/td><td align=\"right\">12.7 MW<\/td><td align=\"right\">10.7 MW<\/td><td align=\"right\">8.2 MW<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, temperatur opp<\/em><\/td><td align=\"right\">37.2 °C<\/td><td align=\"right\">34.0 °C<\/td><td align=\"right\">33.6 °C<\/td><td align=\"right\">33.2 °C<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, effekt<\/em><\/td><td align=\"right\">0.36 MW<\/td><td align=\"right\">0.27 MW<\/td><td align=\"right\">0.26 MW<\/td><td align=\"right\">0.24 MW<\/td><\/tr><\/table>\n<\/div>",
+"500_450": "<div class=\"markdown\"><p>Med <strong>500 m<\/strong> mellom brønnene og <strong>450 m³<\/strong> vann i timen kommer vannet opp med <strong>82.1 °C<\/strong> på det varmeste. Gjennombruddet kommer etter ca. <strong>3 år<\/strong>.<\/p>\n<table><tr><th align=\"right\"><\/th><th align=\"right\">Start<\/th><th align=\"right\">Etter 30 år<\/th><th align=\"right\">Etter 50 år<\/th><th align=\"right\">Etter 100 år<\/th><\/tr><tr><td align=\"right\">Temperatur opp<\/td><td align=\"right\">82.1 °C<\/td><td align=\"right\">56.1 °C<\/td><td align=\"right\">51.0 °C<\/td><td align=\"right\">44.9 °C<\/td><\/tr><tr><td align=\"right\">Effekt<\/td><td align=\"right\">30.5 MW<\/td><td align=\"right\">15.3 MW<\/td><td align=\"right\">12.4 MW<\/td><td align=\"right\">9.1 MW<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, temperatur opp<\/em><\/td><td align=\"right\">37.2 °C<\/td><td align=\"right\">34.0 °C<\/td><td align=\"right\">33.6 °C<\/td><td align=\"right\">33.2 °C<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, effekt<\/em><\/td><td align=\"right\">0.36 MW<\/td><td align=\"right\">0.27 MW<\/td><td align=\"right\">0.26 MW<\/td><td align=\"right\">0.24 MW<\/td><\/tr><\/table>\n<\/div>",
+"750_200": "<div class=\"markdown\"><p>Med <strong>750 m<\/strong> mellom brønnene og <strong>200 m³<\/strong> vann i timen kommer vannet opp med <strong>81.4 °C<\/strong> på det varmeste. Gjennombruddet kommer etter ca. <strong>18 år<\/strong>.<\/p>\n<table><tr><th align=\"right\"><\/th><th align=\"right\">Start<\/th><th align=\"right\">Etter 30 år<\/th><th align=\"right\">Etter 50 år<\/th><th align=\"right\">Etter 100 år<\/th><\/tr><tr><td align=\"right\">Temperatur opp<\/td><td align=\"right\">81.4 °C<\/td><td align=\"right\">76.3 °C<\/td><td align=\"right\">70.3 °C<\/td><td align=\"right\">63.2 °C<\/td><\/tr><tr><td align=\"right\">Effekt<\/td><td align=\"right\">13.4 MW<\/td><td align=\"right\">12.2 MW<\/td><td align=\"right\">10.7 MW<\/td><td align=\"right\">9.1 MW<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, temperatur opp<\/em><\/td><td align=\"right\">39.4 °C<\/td><td align=\"right\">35.6 °C<\/td><td align=\"right\">35.2 °C<\/td><td align=\"right\">34.7 °C<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, effekt<\/em><\/td><td align=\"right\">0.43 MW<\/td><td align=\"right\">0.31 MW<\/td><td align=\"right\">0.3 MW<\/td><td align=\"right\">0.29 MW<\/td><\/tr><\/table>\n<\/div>",
+"750_300": "<div class=\"markdown\"><p>Med <strong>750 m<\/strong> mellom brønnene og <strong>300 m³<\/strong> vann i timen kommer vannet opp med <strong>81.8 °C<\/strong> på det varmeste. Gjennombruddet kommer etter ca. <strong>11 år<\/strong>.<\/p>\n<table><tr><th align=\"right\"><\/th><th align=\"right\">Start<\/th><th align=\"right\">Etter 30 år<\/th><th align=\"right\">Etter 50 år<\/th><th align=\"right\">Etter 100 år<\/th><\/tr><tr><td align=\"right\">Temperatur opp<\/td><td align=\"right\">81.8 °C<\/td><td align=\"right\">71.4 °C<\/td><td align=\"right\">65.4 °C<\/td><td align=\"right\">59.1 °C<\/td><\/tr><tr><td align=\"right\">Effekt<\/td><td align=\"right\">20.2 MW<\/td><td align=\"right\">16.5 MW<\/td><td align=\"right\">14.4 MW<\/td><td align=\"right\">12.1 MW<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, temperatur opp<\/em><\/td><td align=\"right\">39.4 °C<\/td><td align=\"right\">35.6 °C<\/td><td align=\"right\">35.2 °C<\/td><td align=\"right\">34.7 °C<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, effekt<\/em><\/td><td align=\"right\">0.43 MW<\/td><td align=\"right\">0.31 MW<\/td><td align=\"right\">0.3 MW<\/td><td align=\"right\">0.29 MW<\/td><\/tr><\/table>\n<\/div>",
+"750_450": "<div class=\"markdown\"><p>Med <strong>750 m<\/strong> mellom brønnene og <strong>450 m³<\/strong> vann i timen kommer vannet opp med <strong>82.1 °C<\/strong> på det varmeste. Gjennombruddet kommer etter ca. <strong>7 år<\/strong>.<\/p>\n<table><tr><th align=\"right\"><\/th><th align=\"right\">Start<\/th><th align=\"right\">Etter 30 år<\/th><th align=\"right\">Etter 50 år<\/th><th align=\"right\">Etter 100 år<\/th><\/tr><tr><td align=\"right\">Temperatur opp<\/td><td align=\"right\">82.1 °C<\/td><td align=\"right\">66.4 °C<\/td><td align=\"right\">61.4 °C<\/td><td align=\"right\">55.6 °C<\/td><\/tr><tr><td align=\"right\">Effekt<\/td><td align=\"right\">30.5 MW<\/td><td align=\"right\">21.5 MW<\/td><td align=\"right\">18.3 MW<\/td><td align=\"right\">14.8 MW<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, temperatur opp<\/em><\/td><td align=\"right\">39.4 °C<\/td><td align=\"right\">35.6 °C<\/td><td align=\"right\">35.2 °C<\/td><td align=\"right\">34.7 °C<\/td><\/tr><tr><td align=\"right\"><em>Lukket sløyfe, effekt<\/em><\/td><td align=\"right\">0.43 MW<\/td><td align=\"right\">0.31 MW<\/td><td align=\"right\">0.3 MW<\/td><td align=\"right\">0.29 MW<\/td><\/tr><\/table>\n<\/div>"};
+  const valg = { avstand: 1000, rate: 300, år: 30 };
+  const lister = { avstand: AVSTANDER, rate: RATER, år: ÅR };
+  const avhengerAvRate = { tid: true, kart: true, dub3d: true, utsnitt: false, ags3d: false };
+
+  function oppdater() {
+    for (const k in valg) document.getElementById("v-" + k).textContent = valg[k];
+    document.querySelectorAll("img.dyn").forEach(img => {
+      const f = img.dataset.fig;
+      img.src = "bilder/" + f + "_" + valg.avstand + (avhengerAvRate[f] ? "_" + valg.rate : "") + "_" + valg.år + ".png";
+    });
+    const t = document.getElementById("tabell");
+    if (t) t.innerHTML = TABELLER[valg.avstand + "_" + valg.rate] || "";
+  }
+  for (const k in valg) {
+    const s = document.getElementById("s-" + k), liste = lister[k];
+    s.min = 0; s.max = liste.length - 1; s.step = 1; s.value = liste.indexOf(valg[k]);
+    s.addEventListener("input", () => { valg[k] = liste[+s.value]; oppdater(); });
+  }
+  oppdater();
+  document.addEventListener("DOMContentLoaded", () => {
+    if (window.renderMathInElement) renderMathInElement(document.body, { delimiters: [{ left: "$", right: "$", display: false }] });
+  });
+</script>
+</body>
+</html>
